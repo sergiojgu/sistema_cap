@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Control de asistencias y pagos - UE Bolivia Venezuela</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<!-- Pantalla de login -->
+<div id="loginScreen">
+  <h2>Iniciar sesión</h2>
+  <input type="text" id="loginUser" placeholder="Usuario" />
+  <input type="password" id="loginPass" placeholder="Contraseña" />
+  <button onclick="login()">Entrar</button>
+  
+  <!-- Botón de registro -->
+  <div style="margin-top: 15px;">
+    <button onclick="mostrarRegistro()" style="background: #666; width: 220px;">Registrarse</button>
+  </div>
+  
+  <div id="loginError"></div>
+  
+  <!-- Solo mostrar en desarrollo -->
+  <div id="demoCredentials" style="display: none; margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 8px;">
+    <p style="margin: 0; font-size: 12px; color: #666;">
+      <strong>Credenciales de demo:</strong><br>
+      Usuario: root<br>
+      Contraseña: toor
+    </p>
+  </div>
+  
+  <div style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">
+    <p><strong>codigo Chikito - SGA Labs ©</strong></p>
+  </div>
+</div>
+
+<header id="mainHeader" style="display:none;">
+  <h1>Control de asistencias y pagos<br><span class="subtitulo">UE Bolivia Venezuela</span></h1>
+</header>
+
+<!-- MENÚ: aquí insertamos el encabezado fijo arriba del menú -->
+<div id="menu" style="display:none;">
+  <!-- encabezado del usuario conectado (se mostrará cuando exista usuarioActivo) -->
+  <div id="menuHeader" class="menu-header" style="display:none;">
+    <b id="mhUser">Usuario: —</b>
+    <small id="mhRole">Rol: —</small>
+    <small id="mhGrado">Grado: —</small>
+    <div class="logout-small" onclick="logoutAndShowBlank()">Cerrar sesión</div>
+  </div>
+
+  <button onclick="abrirModulo('alumnos')">Alumnos</button>
+  <button onclick="abrirModulo('padres')">Padres</button>
+  <button onclick="abrirModulo('grupos')">Grupos</button>
+  <button onclick="abrirModulo('reuniones')">Reuniones</button>
+  <button onclick="abrirModulo('pagos')">Pagos</button>
+  <button onclick="abrirModulo('usuarios')">Gestión de Usuarios</button>
+  <button onclick="abrirModulo('bitacora')">Bitácora</button>
+  <button class="btn-exportar" onclick="exportarDatos()">Exportar Datos</button>
+  <button class="volver" onclick="logoutAndShowBlank()">Cerrar sesión</button>
+</div>
+
+<div id="notificacion"></div>
+
+<!-- ===== ALUMNOS ===== -->
+<section id="alumnos" class="modulo">
+  <h2>Alumnos</h2>
+  <div class="formulario">
+    <input id="nombreAlumno" type="text" placeholder="Nombre completo">
+    <select id="padreAlumno"><option value="">Seleccionar padre/tutor</option></select>
+    
+    <textarea id="comentariosAlumno" placeholder="Comentarios"></textarea>
+
+    <div style="text-align:center;">
+      <button class="form-btn" id="btnGuardarAlumno" onclick="guardarAlumno()">Guardar</button>
+      <button class="form-btn" onclick="mostrarAlumnos()">Actualizar</button>
+    </div>
+  </div>
+
+  <input id="buscarAlumno" class="search" type="text" placeholder="Buscar alumno">
+  <div id="listaAlumnos" class="lista"></div>
+  <div style="text-align:center">
+    <button class="btn-exportar" onclick="exportarAlumnos()">Exportar Alumnos</button>
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<!-- ===== PADRES ===== -->
+<section id="padres" class="modulo">
+  <h2>Padres / Tutores</h2>
+  <div class="formulario">
+    <input id="nombrePadre" type="text" placeholder="Nombre completo">
+    <input id="telefonoPadre" type="text" placeholder="Teléfono">
+    <select id="grupoPadre"><option value="">Seleccionar grupo</option></select>
+
+    <div style="text-align:center;">
+      <button class="form-btn" id="btnGuardarPadre" onclick="guardarPadre()">Guardar</button>
+      <button class="form-btn" onclick="mostrarPadres()">Actualizar</button>
+    </div>
+  </div>
+
+  <input id="buscarPadre" class="search" type="text" placeholder="Buscar padre">
+  <div id="listaPadres" class="lista"></div>
+  <div style="text-align:center">
+    <button class="btn-exportar" onclick="exportarPadres()">Exportar Padres</button>
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<!-- ===== GRUPOS ===== -->
+<section id="grupos" class="modulo">
+  <h2>Grupos</h2>
+  <div class="formulario">
+    <input id="nombreGrupo" type="text" placeholder="Nombre del grupo">
+    <textarea id="descripcionGrupo" placeholder="Descripción"></textarea>
+    <select id="gradoGrupo">
+      <option value="">Seleccionar grado</option>
+    </select>
+
+    <div style="text-align:center;">
+      <button class="form-btn" id="btnGuardarGrupo" onclick="guardarGrupo()">Guardar</button>
+      <button class="form-btn" onclick="mostrarGrupos()">Actualizar</button>
+    </div>
+  </div>
+
+  <input id="buscarGrupo" class="search" type="text" placeholder="Buscar grupo">
+  <div id="listaGrupos" class="lista"></div>
+  <div style="text-align:center">
+    <button class="btn-exportar" onclick="exportarGrupos()">Exportar Grupos</button>
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<!-- ===== REUNIONES ===== -->
+<section id="reuniones" class="modulo">
+  <h2>Reuniones</h2>
+  <div class="formulario">
+    <input id="tituloReunion" type="text" placeholder="Título de la reunión">
+    <input id="fechaReunion" type="date">
+    <input id="horaReunion" type="time">
+    <textarea id="observacionesReunion" placeholder="Observaciones"></textarea>
+    <select id="grupoReunion">
+      <option value="">Seleccionar grupo</option>
+    </select>
+    <h4>Seleccionar padres presentes:</h4>
+    <div id="listaPadresCheck"></div>
+
+    <div style="text-align:center;">
+      <button class="form-btn" id="btnGuardarReunion" onclick="guardarReunion()">Guardar</button>
+      <button class="form-btn" onclick="mostrarReuniones()">Actualizar</button>
+    </div>
+  </div>
+
+  <input id="buscarReunion" class="search" type="text" placeholder="Buscar reunión">
+  <div id="listaReuniones" class="lista"></div>
+  <div style="text-align:center">
+    <button class="btn-exportar" onclick="exportarReuniones()">Exportar Reuniones</button>
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<!-- ===== PAGOS ===== -->
+<section id="pagos" class="modulo">
+  <h2>Pagos</h2>
+  <div class="formulario">
+    <select id="padrePago"><option value="">Seleccionar padre</option></select>
+    <input id="montoPago" type="number" placeholder="Monto (Bs)">
+    <input id="fechaPago" type="date">
+    <input id="conceptoPago" type="text" placeholder="Concepto / detalle">
+    <div style="text-align:center;">
+      <button class="form-btn" id="btnGuardarPago" onclick="guardarPago()">Guardar</button>
+      <button class="form-btn" onclick="mostrarPagos()">Actualizar</button>
+    </div>
+  </div>
+
+  <input id="buscarPago" class="search" type="text" placeholder="Buscar pago (por padre)">
+  <div id="listaPagos" class="lista"></div>
+  <div style="text-align:center">
+    <button class="btn-exportar" onclick="exportarPagos()">Exportar Pagos</button>
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<!-- ===== GESTIÓN DE USUARIOS ===== -->
+<section id="usuarios" class="modulo">
+  <h2>Gestión de usuarios</h2>
+  <div class="formulario" id="formularioUsuario" style="display:none;">
+    <input id="nombreUsuario" type="text" placeholder="Usuario">
+    <input id="passUsuario" type="password" placeholder="Contraseña">
+    <input id="telefonoUsuario" type="text" placeholder="Teléfono (ej: 591XXXXXXXX)" value="591">
+    <select id="rolUsuario">
+      <!-- Las opciones se cargarán dinámicamente según el rol del usuario -->
+    </select>
+    <select id="gradoUsuario">
+      <option value="">Seleccionar grado</option>
+    </select>
+    <div style="text-align:center;">
+      <button class="form-btn" id="btnGuardarUsuario" onclick="guardarUsuario()">Guardar</button>
+      <button class="form-btn" onclick="cancelarEdicionUsuario()">Cancelar</button>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-bottom: 15px;" id="botonNuevoUsuarioContainer">
+    <button class="form-btn" onclick="nuevoUsuario()" id="btnNuevoUsuario">Nuevo Usuario</button>
+  </div>
+
+  <input id="buscarUsuario" class="search" type="text" placeholder="Buscar usuario">
+  <div id="listaUsuarios" class="lista"></div>
+  <div style="text-align:center">
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<!-- ===== BITÁCORA ===== -->
+<section id="bitacora" class="modulo">
+  <h2>Bitácora del sistema</h2>
+  <div id="logContainer" style="background:#fff; padding:12px; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.1);">
+    <div id="bitacoraLista" style="max-height:400px; overflow:auto; font-family:monospace; white-space:pre-wrap;"></div>
+  </div>
+  <div style="text-align:center">
+    <button class="volver" onclick="volverMenu()">Volver</button>
+  </div>
+</section>
+
+<script src="js/main.js"></script>
+<script src="js/alumnos.js"></script>
+<script src="js/padres.js"></script>
+<script src="js/grupos.js"></script>
+<script src="js/reuniones.js"></script>
+<script src="js/pagos.js"></script>
+<script src="js/usuarios.js"></script>
+<script src="js/bitacora.js"></script>
+
+</body>
+              </html>
